@@ -81,6 +81,7 @@ for t in np.arange(0, time, dt):
     #Advance simulation by dt
     currentControlVector = [controlVector[0][i], controlVector[1][i]]
     car1.step(currentControlVector[0], currentControlVector[1], dt)
+    print currentControlVector, measurementVector, wheelBase, dt
     EKF.step(currentControlVector, measurementVector, wheelBase, dt)
     i = i + 1
     # print i
