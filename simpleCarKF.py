@@ -61,10 +61,10 @@ class SimpleCarKF:
         newY = oldY + (oldV * math.sin(oldTheta) * dt) + (.5 * a * math.sin(oldTheta) * dt**2)
         newV = oldV + a * dt
         newTheta = oldTheta + ((oldV / wheelBase) * math.tan(steerAngle) * dt)
-        if newTheta > 360:
-            newTheta = newTheta - 360
-        elif newTheta < -360:
-            newTheta = newTheta + 360
+        if math.degrees(newTheta) > 360:
+            newTheta = math.radians(math.degrees(newTheta) - 360)
+        elif math.degrees(newTheta) < -360:
+            newTheta = math.radians(math.degrees(newTheta) + 360)
         newTheta_dot = ((oldV / wheelBase) * math.tan(steerAngle))
         predictedX = np.matrix([[newX], [newY], [newTheta], [newV], [(newTheta_dot)]])
         return predictedX
@@ -79,10 +79,14 @@ class SimpleCarKF:
         """Assuming we can measure our stateVector directly, our predicted
         measurement (h(predictedX)) becomes simply predictedX."""
         y = measurementVector - predictedX
-        if y[2] < 0:
-            y[2] = -(abs(y[2]) % (2*math.pi))
-        else:
-            y[2] = (abs(y[2]) % (2*math.pi))
+        if math.degrees(y[2]) > 360:
+            y[2] = math.radians(math.degrees(y[2]) - 360)
+        elif math.degrees(y[2]) < -360:
+            y[2] = math.radians(math.degrees(y[2]) + 360)
+        # if y[2] < 0:
+        #     y[2] = -(abs(y[2]) % (2*math.pi))
+        # else:
+        #     y[2] = (abs(y[2]) % (2*math.pi))
         H = np.eye(5)
         S = H * predictedP * np.transpose(H) + self.R
 

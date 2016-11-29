@@ -9,7 +9,9 @@ import XML_Reader
 import os
 
 '''Get GTA readings'''
-xmlList = os.listdir('gtaOutput/gtaOutput1')
+# xmlFolder = 'gtaOutput/gtaOutput1'
+xmlFolder = 'gtaOutput/28NOV16/first300'
+xmlList = os.listdir(xmlFolder)
 xmlList.sort()
 frameListLength = len(xmlList) #number of frames taken in GTA
 XTruth = [] #meters
@@ -19,12 +21,12 @@ velInput = [] #m/s
 steerAngleInput = [] #degrees
 timeStep = [] #Time from previous frame to current frame
 for i in range(frameListLength):
-    data = XML_Reader.getXMLInfo('gtaOutput/gtaOutput1/' + xmlList[i]) #[posX, posY, theta, vel, steerAngle, dt]
+    data = XML_Reader.getXMLInfo(xmlFolder + '/' + xmlList[i]) #[posX, posY, theta, vel, steerAngle, dt]
     XTruth.append(data[0])
     YTruth.append(data[1])
     thetaTruth.append(data[2])
     velInput.append(data[3])
-    steerAngleInput.append(math.radians(data[4]))
+    steerAngleInput.append((data[4]))
     timeStep.append(data[5])
 
 '''Compute total time elapsed'''
@@ -71,6 +73,7 @@ for t in range(frameListLength):
     xKF.append(currentStateEKF.item(0))
     yKF.append(currentStateEKF.item(1))
     thetaKF.append(math.degrees(currentStateEKF.item(2)))
+
     vKF.append(currentStateEKF.item(3))
     theta_dotKF.append(math.degrees(currentStateEKF.item(4)))
 
