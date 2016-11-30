@@ -4,7 +4,7 @@ import math
 import sympy
 
 '''This class establishes a non-linear kalman filter designed to handle the simple
-car model'''
+car model. COS AND SIN FLIPPED IN PREDICTED X'''
 class SimpleCarKF:
     def __init__(self,X, P, hSym, Q, R):
         self.X = X #state vector
@@ -47,7 +47,7 @@ class SimpleCarKF:
         F = F.subs(L,wheelBase)
         return np.matrix(F)
 
-    def getPredictedX(self, controlVector, wheelBase, dt):
+    def getPredictedX(self, controlVector, wheelBase, dt, time):
         '''Computes predicted state vector'''
         oldX = self.X.item(0)
         oldY = self.X.item(1)
@@ -67,11 +67,15 @@ class SimpleCarKF:
             newTheta = math.radians(math.degrees(newTheta) + 360)
         newTheta_dot = ((oldV / wheelBase) * math.tan(steerAngle))
         predictedX = np.matrix([[newX], [newY], [newTheta], [newV], [(newTheta_dot)]])
+        # print 'new theta',math.degrees(newTheta)
+        # print 'new theta_dot * dt', ((oldV / wheelBase) * math.tan(steerAngle) * dt)
+        # print 'time',time
+        # raw_input('hi')
         return predictedX
 
-    def step(self, controlVector, measurementVector, wheelBase, dt):
+    def step(self, controlVector, measurementVector, wheelBase, dt, time):
         """PREDICTION"""
-        predictedX = self.getPredictedX(controlVector, wheelBase, dt)
+        predictedX = self.getPredictedX(controlVector, wheelBase, dt, time)
         F = self.getF(controlVector, wheelBase, dt)
         predictedP = (F * self.P * np.transpose(F)) + self.Q
 

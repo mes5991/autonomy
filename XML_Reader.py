@@ -11,4 +11,5 @@ def getXMLInfo(xmlFile):
     info = [posX, posY, theta, vel, steerAngle, dt]
     for i in range(len(info)):
         info[i] = float(info[i])
+    info[2] -= 90
     return info

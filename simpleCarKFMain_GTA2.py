@@ -10,10 +10,12 @@ import os
 
 '''Get GTA readings'''
 # xmlFolder = 'gtaOutput/gtaOutput1'
-xmlFolder = 'gtaOutput/28NOV16/first300'
+# xmlFolder = 'gtaOutput/28NOV16/first300'
+xmlFolder = 'gtaOutput/29NOV16/output4'
 xmlList = os.listdir(xmlFolder)
 xmlList.sort()
-frameListLength = len(xmlList) #number of frames taken in GTA
+# frameListLength = len(xmlList) #number of frames taken in GTA
+frameListLength = 500
 XTruth = [] #meters
 YTruth = [] #meters
 thetaTruth = [] #degrees
@@ -26,7 +28,7 @@ for i in range(frameListLength):
     YTruth.append(data[1])
     thetaTruth.append(data[2])
     velInput.append(data[3])
-    steerAngleInput.append((data[4]))
+    steerAngleInput.append(math.radians(data[4]))
     timeStep.append(data[5])
 
 '''Compute total time elapsed'''
@@ -73,7 +75,10 @@ for t in range(frameListLength):
     xKF.append(currentStateEKF.item(0))
     yKF.append(currentStateEKF.item(1))
     thetaKF.append(math.degrees(currentStateEKF.item(2)))
-
+    # print 'theta:', math.degrees(currentStateEKF.item(2))
+    # print 'steering angle', steerAngleInput[t]
+    # print 'time step:', t
+    # raw_input('waiting...')
     vKF.append(currentStateEKF.item(3))
     theta_dotKF.append(math.degrees(currentStateEKF.item(4)))
 
@@ -81,7 +86,7 @@ for t in range(frameListLength):
     currentControlVector = [accInput[t], (steerAngleInput[t])]
     measurementVector = np.matrix([[XTruth[t]], [YTruth[t]], [math.radians(thetaTruth[t])], [velInput[t]], [math.radians(theta_dot[t])]])
     # print currentControlVector, measurementVector, wheelBase, timeStep[t]
-    EKF.step(currentControlVector, measurementVector, wheelBase, timeStep[t])
+    EKF.step(currentControlVector, measurementVector, wheelBase, timeStep[t], time[t])
     # print t
 
 print 'theta truth', thetaTruth
@@ -89,8 +94,8 @@ print
 print 'theta KF', thetaKF
 '''Plotting'''
 pltBool = 1
-showImages = 0
-saveImage = 1
+showImages = 1
+saveImage = 0
 if pltBool:
     plt.figure()
     plt.plot(XTruth, YTruth, 'b')
@@ -168,4 +173,7 @@ if pltBool:
         plt.savefig(title + '.png')
 
     if showImages:
-        plt.show()
+        plt.show(block = False)
+
+raw_input('Close?')
+plt.close('all')
